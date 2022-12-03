@@ -43,8 +43,8 @@ def send_notifications(update: Update, context: CallbackContext):
             else:
                 text = "У вас проверили работу '{}'.\n\n Преподавателю всё понравилось, можно приступать к следующему уроку!\n\n Ссылка на урок - {}"\
                     .format(last_record.get('lesson_title'), last_record.get('lesson_url'))
-            chat_id = input('Введите id пользователя, которому нужно отправить сообщение:')
-            bot.send_message(chat_id=chat_id, text=text) # 486128297
+            chat_id = input('Введите id пользователя, которому нужно отправить сообщение:') # 486128297
+            bot.send_message(chat_id=chat_id, text=text)
         except (ReadTimeout, ConnectionError) as error:
             return 'Exception description - {}'.format(error)
 
