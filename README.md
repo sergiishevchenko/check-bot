@@ -18,12 +18,6 @@ python3 -m myenv venv
 source venv\bin\activate
 pip install -r requirements.txt
 python3 main.py
-
-## Как получить информацию о статусе проверенных задач?
 ```
-Чтобы узнать статус о проверенных задачах, наберите командной строке бота **job_bot** следующую команду:
-```
-/send_notifications
-```
-В ответ получите примерно такое сообщение:
+После запуска бота в ответ получите примерно такое сообщение:
 ![Alt text](https://file%2B.vscode-resource.vscode-cdn.net/var/folders/t9/254vh6ys22370837thlb7tc40000gn/T/TemporaryItems/NSIRD_screencaptureui_9usS8f/Screenshot%202022-12-03%20at%2008.53.58.png?version%3D1670054057525)
