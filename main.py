@@ -1,39 +1,27 @@
-import requests
-import telegram
 import logging
 import os
+import requests
+import telegram
+import time
 
-from requests.exceptions import ReadTimeout, ConnectionError
-
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
+from requests.exceptions import ConnectionError
 
 from dotenv import load_dotenv
-
-load_dotenv()
-
-bot = telegram.Bot(token=os.getenv("BOT_TOKEN"))
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
 
 logger = logging.getLogger(__name__)
 
 
-def send_notifications(update: Update, context: CallbackContext):
+def main():
     url = 'https://dvmn.org/api/user_reviews/'
     headers = {
-        "Authorization": "Token {}".format(os.getenv("DEVMAN_TOKEN"))
+        'Authorization': 'Token {}'.format(os.getenv('DEVMAN_TOKEN'))
     }
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     while True:
         try:
             long_polling_url = 'https://dvmn.org/api/long_polling/'
-            long_polling_response = requests.get(long_polling_url, headers=headers)
-            timestamp_to_request = long_polling_response.json().get('timestamp_to_request', '')
-            requests.get(long_polling_url, headers=headers, params={'timestamp': timestamp_to_request})
+            requests.get(long_polling_url, headers=headers)
 
             results = response.json().get('results', [])
             last_record = results[0]
@@ -43,24 +31,16 @@ def send_notifications(update: Update, context: CallbackContext):
             else:
                 text = "У вас проверили работу '{}'.\n\n Преподавателю всё понравилось, можно приступать к следующему уроку!\n\n Ссылка на урок - {}"\
                     .format(last_record.get('lesson_title'), last_record.get('lesson_url'))
-            chat_id = input('Введите id пользователя, которому нужно отправить сообщение:') # 486128297
-            bot.send_message(chat_id=chat_id, text=text)
-        except (ReadTimeout, ConnectionError) as error:
+            bot.send_message(chat_id=os.getenv('TG_CHAT_ID'), text=text)
+        except ConnectionError as error:
             return 'Exception description - {}'.format(error)
-
-
-def main():
-    updater = Updater(token=os.getenv("BOT_TOKEN"), use_context=True)
-    dispatcher = updater.dispatcher
-
-    dispatcher.add_handler(CommandHandler('get_job_status', send_notifications))
-
-    updater.start_polling()
-
-    updater.idle()
+        time.sleep(60)
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    load_dotenv()
+    bot = telegram.Bot(token=os.getenv('TELEGRAM_TOKEN'))
     main()
 
 
