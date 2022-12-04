@@ -17,19 +17,21 @@ def main():
     load_dotenv()
     bot = telegram.Bot(token=os.getenv('TELEGRAM_TOKEN'))
 
+    timestamp_to_request = time.time()
+
     while True:
         try:
             url = 'https://dvmn.org/api/long_polling/'
             headers = {
                 'Authorization': 'Token {}'.format(os.getenv('DEVMAN_TOKEN'))
             }
-            response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers, params={'timestamp': timestamp_to_request})
             response.raise_for_status()
 
             if response.json().get('status') == 'timeout':
                 timestamp_to_request = response.json().get('timestamp_to_request', '')
-                response = requests.get(url, headers=headers, params={'timestamp': timestamp_to_request})
-                response.raise_for_status()
+            if response.json().get('status') == 'found':
+                timestamp_to_request = response.json().get('last_attempt_timestamp', '')
 
             if response.json().get('new_attempts'):
                 new_attempts = response.json().get('new_attempts', [])
@@ -41,8 +43,10 @@ def main():
                     text = "У вас проверили работу '{}'.\n\n Преподавателю всё понравилось, можно приступать к следующему уроку!\n\n Ссылка на урок - {}"\
                         .format(last_record.get('lesson_title'), last_record.get('lesson_url'))
                 bot.send_message(chat_id=os.getenv('TG_CHAT_ID'), text=text)
-        except (ReadTimeout, ConnectionError) as error:
+        except ConnectionError as error:
             time.sleep(60)
+            return 'Exception description - {}'.format(error)
+        except ReadTimeout as error:
             return 'Exception description - {}'.format(error)
 
 
