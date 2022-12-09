@@ -49,7 +49,7 @@ def main():
                     text = "У вас проверили работу '{}'.\n\n Преподавателю всё понравилось, можно приступать к следующему уроку!\n\n Ссылка на урок - {}"\
                         .format(last_record.get('lesson_title'), last_record.get('lesson_url'))
                 bot.send_message(chat_id=os.getenv('TG_CHAT_ID'), text=text)
-                logger.info('Сообщение отправлено в чат!')
+                logger.debug('Сообщение отправлено в чат!')
         except ConnectionError as error:
             time.sleep(60)
             logger.error('Exception description - {}'.format(error))
