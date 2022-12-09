@@ -4,6 +4,8 @@ import requests
 import telegram
 import time
 
+from logger import TelegramLogsHandler
+
 from requests.exceptions import ConnectionError, ReadTimeout
 
 from dotenv import load_dotenv
@@ -13,10 +15,12 @@ logger = logging.getLogger(__name__)
 
 def main():
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-    logging.info('Стартанули!')
 
     load_dotenv()
     bot = telegram.Bot(token=os.getenv('TELEGRAM_TOKEN'))
+
+    logger.addHandler(TelegramLogsHandler(bot, os.getenv('TG_CHAT_ID')))
+    logger.info('Бот запущен!')
 
     timestamp_to_request = time.time()
 
@@ -45,11 +49,12 @@ def main():
                     text = "У вас проверили работу '{}'.\n\n Преподавателю всё понравилось, можно приступать к следующему уроку!\n\n Ссылка на урок - {}"\
                         .format(last_record.get('lesson_title'), last_record.get('lesson_url'))
                 bot.send_message(chat_id=os.getenv('TG_CHAT_ID'), text=text)
+                logger.info('Сообщение отправлено в чат!')
         except ConnectionError as error:
             time.sleep(60)
-            print('Exception description - {}'.format(error))
+            logger.error('Exception description - {}'.format(error))
         except ReadTimeout as error:
-            print('Exception description - {}'.format(error))
+            logger.error('Exception description - {}'.format(error))
 
 
 if __name__ == '__main__':
