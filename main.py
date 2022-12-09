@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 
 def main():
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+    logging.info('Стартанули!')
+    logging.debug('Сообщение для дебагинга')
 
     load_dotenv()
     bot = telegram.Bot(token=os.getenv('TELEGRAM_TOKEN'))
