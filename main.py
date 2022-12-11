@@ -32,15 +32,15 @@ def main():
             }
             response = requests.get(url, headers=headers, params={'timestamp': timestamp_to_request})
             response.raise_for_status()
-            response = response.json()
+            reviews_update = response.json()
 
-            if response.get('status') == 'timeout':
-                timestamp_to_request = response.get('timestamp_to_request', '')
-            if response.get('status') == 'found':
-                timestamp_to_request = response.get('last_attempt_timestamp', '')
+            if reviews_update.get('status') == 'timeout':
+                timestamp_to_request = reviews_update.get('timestamp_to_request', '')
+            if reviews_update.get('status') == 'found':
+                timestamp_to_request = reviews_update.get('last_attempt_timestamp', '')
 
-            if response.get('new_attempts'):
-                new_attempts = response.get('new_attempts', [])
+            if reviews_update.get('new_attempts'):
+                new_attempts = reviews_update.get('new_attempts', [])
                 last_record = new_attempts[0]
                 if last_record.get('is_negative'):
                     text = "У вас проверили работу '{}'.\n\n К сожалению, в работе нашлись ошибки.\n\n Ссылка на урок - {}"\
