@@ -39,20 +39,19 @@ def main():
             if reviews_update.get('status') == 'found':
                 timestamp_to_request = reviews_update.get('last_attempt_timestamp', '')
 
-            if reviews_update.get('new_attempts'):
-                new_attempts = reviews_update.get('new_attempts', [])
+            if new_attempts := reviews_update.get('new_attempts'):
                 last_record = new_attempts[0]
                 if last_record.get('is_negative'):
                     text = f"""\
-                        У вас проверили работу '{last_record.get('lesson_title')}'.
-                        К сожалению, в работе нашлись ошибки.
-                        Ссылка на урок - {last_record.get('lesson_url')}"
+                    У вас проверили работу '{last_record.get('lesson_title')}'.
+                    К сожалению, в работе нашлись ошибки.
+                    Ссылка на урок - {last_record.get('lesson_url')}"
                     """
                 else:
                     text = f"""\
-                        У вас проверили работу '{last_record.get('lesson_title')}'.
-                        Преподавателю всё понравилось, можно приступать к следующему уроку!
-                        Ссылка на урок - {last_record.get('lesson_url')}"
+                    У вас проверили работу '{last_record.get('lesson_title')}'.
+                    Преподавателю всё понравилось, можно приступать к следующему уроку!
+                    Ссылка на урок - {last_record.get('lesson_url')}"
                     """
                 bot.send_message(chat_id=os.getenv('TG_CHAT_ID'), text=text)
                 logger.debug('Сообщение отправлено в чат!')
