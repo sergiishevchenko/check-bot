@@ -51,3 +51,9 @@ python3 -m venv myenv && source myenv/bin/activate
 python main.py
 ```
 Поздравляю! Вы запустили бота!
+
+## Установка проекта локально с помощью docker
+#### Находясь в корневой папке проекта, соберите образ, выполнив команду:
+`docker build -t job-bot`
+#### Запустите созданный образ:
+`docker run job-bot`
